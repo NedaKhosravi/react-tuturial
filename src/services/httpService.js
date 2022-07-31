@@ -1,11 +1,7 @@
 import axios from "axios";
 import logger from "./logService";
 import { toast } from "react-toastify";
-import auth from "./authService";
 
-// Whenever we have http request, this token will be included.
-// If the user is not logged in, token will be undefined so this header will not be set
-axios.defaults.headers.common['x-auth-token'] = auth.getJwt(); 
 axios.interceptors.response.use(null, error => {
   const expectedError =
     error.response &&
@@ -20,9 +16,16 @@ axios.interceptors.response.use(null, error => {
   return Promise.reject(error);
 });
 
+function setJwt(jwt) {
+  // Whenever we have http request, this token will be included.
+  // If the user is not logged in, token will be undefined so this header will not be set
+  axios.defaults.headers.common['x-auth-token'] = jwt; 
+}
+
 export default {
   get: axios.get,
   post: axios.post,
   put: axios.put,
-  delete: axios.delete
+  delete: axios.delete,
+  setJwt
 };
