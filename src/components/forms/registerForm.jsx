@@ -1,50 +1,46 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import Joi from 'joi-browser';
-import Form from './form';
+import Form2 from './form';
 import { register } from './../../services/userService';
 import auth from '../../services/authService';
 
-class RegisterForm extends Form {
-    state = {
-        data: { username: '', password: '',name:'' },
-        errors: {}
-    }
+const RegisterForm = () => {
+    const [data, setData] = useState({ username: '', password: '', name:'' });
+    const [errors, setErrors] = useState({});
 
-    schema = {
+    const schema = {
         username: Joi.string().email().required().label('Username'),
         password: Joi.string().min(5).required().label('Password'),
         name: Joi.string().required().label("Name")
     } 
 
-    doSubmit = async () => {
+    const doSubmit = async () => {
         try {
-            const response = await register(this.state.data);
+            const response = await register(data);
             auth.loginwithJwt(response.headers['x-auth-token']);
             // Full reload of the application
             window.location = '/';
         }
         catch (ex) {
             if (ex.response && ex.response.status === 400) {
-                const errors = { ...this.state.errors };
-                errors.username = ex.response.data;
-                this.setState({ errors });
+                const newErrors = { ...errors };
+                newErrors.username = ex.response.data;
+                setErrors(newErrors);
             }
         }
     }
 
-    render() { 
-        return (
-            <>
-            <h1>Register</h1>
-                <form onSubmit={this.handleSubmit}>
-                    {this.renderInput("username","Username")}
-                    {this.renderInput("password","Password","password")}
-                    {this.renderInput("name","Name")}
-                    {this.renderButton("Register")}
-                </form>
-            </>
-        );
-    }
+    return (
+        <>
+        <h1>Register</h1>
+            <form onSubmit={Form2.handleSubmit(doSubmit,schema)}>
+                {Form2.renderInput("username","Username",schema)}
+                {Form2.renderInput("password","Password","password",schema)}
+                {Form2.renderInput("name","Name",schema)}
+                {Form2.renderButton("Register",schema)}
+            </form>
+        </>
+    );
 }
  
 export default RegisterForm;

@@ -1,52 +1,56 @@
-import React, { Component } from 'react';
-import Form from '../forms/form';
+import React, { useState, useEffect } from 'react';
+import Form2 from '../forms/form';
 import Joi  from 'joi-browser';
 import { getGenres } from '../../services/genreService';
 import { getMovie, saveMovie } from '../../services/movieService';
 
-class MovieForm extends Form {
-    state = {
-        genres: [],
-        data: {
-            title: '',
-            genreId: '',
-            dailyRentalRate: '',
-            numberInStock: ''
-        },
-        errors: {}
-    }
-    schema = {
+const MovieForm = (props) => {
+    const [genres, setGenres] = useState([]);
+    const [data, setData] = useState({
+        title: '',
+        genreId: '',
+        dailyRentalRate: '',
+        numberInStock: ''
+    });
+    const [errors, setErrors] = useState({});
+    
+    const schema = {
         _id: Joi.string(),
         title: Joi.string().required().label('Title'),
         genreId: Joi.string().required().label("Genre"),
         numberInStock: Joi.number().min(0).max(1000).required().label("Number in Stock"),
         dailyRentalRate: Joi.number().min(0).max(10).required().label('Daily Rental Rate')
-    } 
-    async populateGenres() {
-        const { data: genres } = await getGenres();
-        this.setState({ genres });
+    };
+
+    const populateGenres = async () => {
+        const { data } = await getGenres();
+        setGenres(data);
     }
 
-    async populateMovie() {
+    const populateMovie= async () =>{
         try {
-            const movieId = this.props.match.params.id;
+            const movieId = props.match.params.id;
             if (movieId === "new") return;
 
-            const {data: movie} = await getMovie(movieId);
-            this.setState({ data: this.mapToViewModel(movie) });
+            const { data: movie } = await getMovie(movieId);
+            setData(mapToViewModel(movie));
         }
         catch (ex) {
             if (ex.response && ex.response.status === 404)
-                this.props.history.replace("/not-found");
+                props.history.replace("/not-found");
         }
     }
 
-    async componentDidMount() {
-        await this.populateGenres();
-        await this.populateMovie();
+    const fetchData = async () => {
+        await populateGenres();
+        await populateMovie();
     }
 
-    mapToViewModel(movie) {
+    useEffect(() => {
+        fetchData();
+    });
+
+    const mapToViewModel = (movie) =>{
         return {
             _id: movie._id,
             title: movie.title,
@@ -56,25 +60,23 @@ class MovieForm extends Form {
         }
     }
 
-    doSubmit = async () => {
-        await saveMovie(this.state.data);
-        this.props.history.push("/movies");
+    const doSubmit = async () => {
+        await saveMovie(data);
+        props.history.push("/movies");
     }
-    render() { 
-        return (
-            <>
-                <h1>Movie Form</h1>
-                <form onSubmit={this.handleSubmit}>
-                    {this.renderInput("title", "Title")}
-                    {this.renderSelect("genreId","Genre", this.state.genres)}
-                    {this.renderInput("numberInStock","Number in Stock", "number")}
-                    {this.renderInput("dailyRentalRate","Rate")}
-                    {this.renderButton("Save")}
-                    <button className="btn btn-primary" style={{marginLeft:"15px"}} onClick={() => this.props.history.push('/movies')}>Back</button>
-                </form>
-            </>
-        );
-    }
+    return (
+        <>
+            <h1>Movie Form</h1>
+            <form onSubmit={Form2.handleSubmit(doSubmit,schema)}>
+                {Form2.renderInput("title", "Title",schema)}
+                {Form2.renderSelect("genreId","Genre", genres,schema)}
+                {Form2.renderInput("numberInStock","Number in Stock", "number",schema)}
+                {Form2.renderInput("dailyRentalRate","Rate",schema)}
+                {Form2.renderButton("Save",schema)}
+                <button className="btn btn-primary" style={{marginLeft:"15px"}} onClick={() => props.history.push('/movies')}>Back</button>
+            </form>
+        </>
+    );
 }
  
 export default MovieForm;

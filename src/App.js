@@ -14,6 +14,8 @@ import auth from './services/authService';
 import ProtectedRoute from './common/protectedRoute';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import Form from './components/forms/form';
+import Index from './components/Test/index';
 
 class App extends Component {
   state = {};
@@ -32,7 +34,7 @@ class App extends Component {
         <NavBar user={user} />
       <main className='container'>
           <Switch>
-            <Route path="/login" component={LoginForm} />
+            <Route path="/login" component={Form} />
             <Route path="/logout" component={Logout} />
             <Route path="/register" component={RegisterForm} />
             {/* ProtectedRoute is aware of the current user */}
