@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Navigate  } from 'react-router-dom';
 import auth from '../services/authService';
 
 const ProtectedRoute = ({path, component: Component, render, ...rest}) => {
@@ -8,7 +8,7 @@ const ProtectedRoute = ({path, component: Component, render, ...rest}) => {
             path={path}
             {...rest}
             render={props => {
-                if (!auth.getCurrentUser()) return <Redirect to={{
+                if (!auth.getCurrentUser()) return <Navigate  to={{
                     pathname: '/login',
                     // current location before redirecting user to the login page
                     state: {from: props.location}

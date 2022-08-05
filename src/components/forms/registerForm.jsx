@@ -4,7 +4,7 @@ import Form2 from './form';
 import { register } from './../../services/userService';
 import auth from '../../services/authService';
 
-const RegisterForm = () => {
+const RegisterForm = ({handleSubmit}) => {
     const [data, setData] = useState({ username: '', password: '', name:'' });
     const [errors, setErrors] = useState({});
 
@@ -33,7 +33,7 @@ const RegisterForm = () => {
     return (
         <>
         <h1>Register</h1>
-            <form onSubmit={Form2.handleSubmit(doSubmit,schema)}>
+            <form onSubmit={handleSubmit(doSubmit,schema)}>
                 {Form2.renderInput("username","Username",schema)}
                 {Form2.renderInput("password","Password","password",schema)}
                 {Form2.renderInput("name","Name",schema)}

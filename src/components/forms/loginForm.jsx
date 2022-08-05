@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import Joi from 'joi-browser';
 import auth from '../../services/authService';
-import { Redirect } from 'react-router-dom';
+import { Navigate  } from 'react-router-dom';
 import Input from './input';
 import Form from './form';
 
@@ -15,6 +15,7 @@ const LoginForm = (props) => {
     } 
 
     const doSubmit = async () => {
+        console.log("nedaaaa");
         try {
             // Json web token
             await auth.login(data.username, data.password);
@@ -72,12 +73,13 @@ const LoginForm = (props) => {
     //     return newErrors;
     // }
     
-    if (auth.getCurrentUser()) return <Redirect to='/' />
+    // if (auth.getCurrentUser()) return <Navigate  to='/' />
     const { handleSubmit, handleChange, validate, test } = props;
+    console.log("props", props);
     return (
         <>
             <h1>Login</h1>
-            <form onSubmit={() => handleSubmit(schema, doSubmit)}>
+            <form onSubmit={(e) => handleSubmit(e, schema, doSubmit)}>
             <Input
                 type="text"
                 name="username"
@@ -94,7 +96,7 @@ const LoginForm = (props) => {
                 onChange={() => handleChange(schema)}
                 error={errors["password"]}
             />
-                <button disabled={Object.values(validate(schema)).length > 0 ? true : false} className="btn btn-primary">Login</button>
+                <button  className="btn btn-primary">Login</button>
         </form>
         </>
     );

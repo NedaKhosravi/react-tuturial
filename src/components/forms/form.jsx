@@ -29,14 +29,14 @@ const Form = () => {
         return error ? error.details[0].message : null;
     }
 
-    const handleSubmit = (e , schema, doSubmit) =>{
+    const handleSubmit = (e, schema, doSubmit) =>{
         //  if the event does not get explicitly handled, its default action should not be taken as it normally would be.
         e.preventDefault();
         const errors = validate(schema);
         setErrors(errors || {});
-        if (errors) return;
+        // if (errors) return;
         doSubmit();
-        console.log("hi from submit");
+        // console.log("hi from submit");
     }
 
     // Single source of truth
